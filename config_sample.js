@@ -9,7 +9,7 @@ export const kexp_const = {
 }
 
 export const twitter_config = {
-   CLIENT_ID: "YOUR_CLIENT_ID",
-   CLIENT_SECRET: "YOUR_CLIENT_SECRET",
+   CLIENT_ID: "YOUR_CLIENT_ID", //Set your oauth2 Client ID
+   CLIENT_SECRET: "YOUR_CLIENT_SECRET", //Set your oauth2 Client Secret
    REFRESH_TOKEN: process.env.REFR_TOKEN //Complete oauth2 flow outside of app and store initial refresh token in .env
 };
