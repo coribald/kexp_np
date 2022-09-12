@@ -2,6 +2,7 @@
 //updated 2022-09-12
 import * as twitter from './twitter_helper.js';
 import * as kexp from './kexp_helper.js';
+import { TwitterApi } from 'twitter-api-v2';
 import { twitter_config, kexp_const } from './config.js';
 
 let client = '';
@@ -69,7 +70,15 @@ async function tweetPlaylist() {
          let show_tweet = await twitter.sendTweet(client,show_string);
          writeLogMsg("INFO: Tweeted new show: " + JSON.stringify(show_tweet));
       } catch (err) {
-         writeLogMsg("WARNING: Error tweeting new show details: " + err + ". Continuing anyway.");
+         if (err.error) {
+            let err_fixed = JSON.parse(JSON.stringify(err));
+            if (err_fixed.code && err_fixed.error.detail) {
+               let err_code = err_fixed.code;
+               let err_desc = err_fixed.error.detail;
+               writeLogMsg("WARNING: Error tweeting new show details. Continuing anyway: " + err_code + " - " + err_desc);
+            }
+         }
+         writeLogMsg("WARNING: Error tweeting new show details. Continuing anyway: " + err);
       }
    }
 
@@ -107,7 +116,15 @@ async function tweetPlaylist() {
       }
       writeLogMsg("INFO: Tweeted new track: " + JSON.stringify(track_tweet));
    } catch (err) {
-      return "FAILURE: Error sending tweet of latest track: " + err;
+      if (err.error) {
+         let err_fixed = JSON.parse(JSON.stringify(err));
+         if (err_fixed.code && err_fixed.error.detail) {
+            let err_code = err_fixed.code;
+            let err_desc = err_fixed.error.detail;
+            return "FAILURE: Error tweeting new track details: " + err_code + " - " + err_desc;
+         }
+      }
+      return "FAILURE: Error tweeting new track details: " + err;
    }
 
    //Write tweeted track to file for reference

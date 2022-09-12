@@ -1,4 +1,41 @@
 {
-   "playid": 0,
-   "showid": 0
+   "playid": 3090053,
+   "playtype": {
+      "playtypeid": 1,
+      "name": "Media play"
+   },
+   "airdate": "2022-09-12T08:57:49Z",
+   "epoch_airdate": 1662973069000,
+   "epoch_airdate_v2": "/Date(1662973069000)/",
+   "archive_urls": {
+      "32": "http://50.234.71.239:8090/stream-32.mp3?date=2022-09-12T08:57:49Z",
+      "64": "http://50.234.71.239:8090/stream-64.mp3?date=2022-09-12T08:57:49Z",
+      "128": "http://50.234.71.239:8090/stream-128.mp3?date=2022-09-12T08:57:49Z",
+      "256": "http://50.234.71.239:8090/stream-256.mp3?date=2022-09-12T08:57:49Z"
+   },
+   "artist": {
+      "artistid": 1674508330,
+      "name": "Parade Ground",
+      "islocal": false
+   },
+   "release": {
+      "releaseid": 1533182900,
+      "name": "Strange World",
+      "largeimageuri": null,
+      "smallimageuri": null
+   },
+   "releaseevent": {
+      "releaseeventid": 1175358950,
+      "year": 2011
+   },
+   "track": {
+      "trackid": 1248589539,
+      "name": "Retired"
+   },
+   "label": {
+      "labelid": 168488356,
+      "name": "Dark Entries"
+   },
+   "comments": [],
+   "showid": 54770
 }
