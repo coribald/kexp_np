@@ -1,0 +1,25 @@
+{
+  "name": "kexp_np",
+  "version": "1.0.0",
+  "description": "KEXP Playlist Twitter Bot",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coribald/kexp_np.git"
+  },
+  "author": "coribald",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/coribald/kexp_np/issues"
+  },
+  "homepage": "https://github.com/coribald/kexp_np#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.2",
+    "twitter-api-v2": "^1.12.5"
+  }
+}
