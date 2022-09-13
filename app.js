@@ -127,9 +127,10 @@ async function tweetPlaylist() {
             let err_code = err_fixed.code;
             let err_desc = err_fixed.error.detail;
             //if it's a valid duplicate and not a repeat, try again with an extra ~
-            if (error_desc.indexOf('duplicate') > 0 && play_string != previous_tweet_str) {
+            if (err_desc.indexOf('duplicate') > 0 && play_string != previous_tweet_str) {
                   play_string += "  ~";
-                  track_tweet = await twitter.sendTweet(client,play_string);
+                  let track_tweet2 = await twitter.sendTweet(client,play_string);
+                  writeLogMsg("INFO: Tweeted new track: " + JSON.stringify(track_tweet2));
             } else {
                return "FAILURE: Error tweeting new track details: " + err_code + " - " + err_desc;
             }
