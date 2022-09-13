@@ -2,4 +2,8 @@ node_modules
 config.js
 last_track.json
 .env
+.token
 .nvmrc
+.auth_urls
+ssh*
+fly.toml

@@ -1,25 +1,25 @@
 import * as fs from 'fs';
 import axios from 'axios';
-import { kexp_const } from './config.js';
+import { kexp_config } from './config.js';
 
 //Initialize HTTP client
 const kexp = axios.create({
-   baseURL: kexp_const.URL,
+   baseURL: kexp_config.URL,
    timeout: 8000,
    headers: {'Accept': 'application/json'}
 });
 
 //Get current track from KEXP API
 export async function getCurrentTrack() {
-   let endpoint = kexp_const.TRACK_ENDPOINT;
+   let endpoint = kexp_config.TRACK_ENDPOINT;
    let response = await kexp.get(endpoint);
    if (response.status === 200) {
       //Only proceed if not an air break
-      if (response.data.results[0].playtype.playtypeid != kexp_const.AIR_BREAK) {
+      if (response.data.results[0].playtype.playtypeid != kexp_config.AIR_BREAK) {
          return response.data.results[0];
       }
       else {
-         return kexp_const.AIR_BREAK;
+         return kexp_config.AIR_BREAK;
       }
    }
    return false;
@@ -27,7 +27,7 @@ export async function getCurrentTrack() {
 
 //Get current show from KEXP API
 export async function getCurrentShow(showId) {
-   let endpoint = kexp_const.SHOW_ENDPOINT + showId;
+   let endpoint = kexp_config.SHOW_ENDPOINT + showId;
    let response = await kexp.get(endpoint);
    if (response.status === 200) {
       let show = {};
@@ -54,8 +54,8 @@ export async function getCurrentShow(showId) {
 }
 
 //Write out track JSON to file
-export async function writeTrackToFile(trackToWrite) {
-   let file_update = fs.writeFileSync('last_track.json', trackToWrite);
+export async function writeTrackToFile(trackToWrite,trackFile) {
+   let file_update = fs.writeFileSync(trackFile, trackToWrite);
    if (file_update) {
       return true;
    }
@@ -63,8 +63,8 @@ export async function writeTrackToFile(trackToWrite) {
 }
 
 //Read in track JSON from file
-export async function readTrackFromFile() {
-   let file_read = fs.readFileSync('last_track.json');
+export async function readTrackFromFile(trackFile) {
+   let file_read = fs.readFileSync(trackFile);
    if (file_read) {
       let file_parsed = JSON.parse(file_read);
       return file_parsed;

@@ -2,22 +2,24 @@
 //updated 2022-09-12
 import * as twitter from './twitter_helper.js';
 import * as kexp from './kexp_helper.js';
-import { TwitterApi } from 'twitter-api-v2';
-import { twitter_config, kexp_const } from './config.js';
+import { twitter_config, kexp_config } from './config.js';
 
 let client = '';
 let current_track = '';
 let previous_track = '';
+let previous_tweet_str = '';
 
-const result = await tweetPlaylist(); //Main function
-writeLogMsg(result);
-writeLogMsg("END");
+setInterval(async () => {
+   const result = await tweetPlaylist(); //Main function
+   writeLogMsg(result);
+   writeLogMsg("END");
+},30000);
 
 async function tweetPlaylist() {
    writeLogMsg("START");
-   //Auth to Twitter
+   //Refresh Token and auth to Twitter
    try {
-      client = await twitter.refreshToken(twitter_config.CLIENT_ID, twitter_config.CLIENT_SECRET, twitter_config.REFRESH_TOKEN);
+      client = await twitter.refreshToken(twitter_config.CLIENT_ID, twitter_config.CLIENT_SECRET, twitter_config.TOKEN_FILE);
       if (!client) {
          throw new Error("Oauth refresh failed for unclear reasons");
       } //Bail out if we somehow passed the refresh with no data
@@ -28,7 +30,7 @@ async function tweetPlaylist() {
    //Get current track details from KEXP API
    try {
       current_track = await kexp.getCurrentTrack();
-      if (current_track === kexp_const.AIR_BREAK) {
+      if (current_track === kexp_config.AIR_BREAK) {
          return "INFO: Received Air Break from API. Not Proceeding.";
       }
       else if (!current_track) {
@@ -40,7 +42,7 @@ async function tweetPlaylist() {
 
    //Read in last track from file
    try {
-      previous_track = await kexp.readTrackFromFile();
+      previous_track = await kexp.readTrackFromFile(kexp_config.TRACK_FILE);
       if (!previous_track) {
          throw new Error("Getting track from file failed for unclear reasons");
       }
@@ -76,9 +78,12 @@ async function tweetPlaylist() {
                let err_code = err_fixed.code;
                let err_desc = err_fixed.error.detail;
                writeLogMsg("WARNING: Error tweeting new show details. Continuing anyway: " + err_code + " - " + err_desc);
+            } else {
+               writeLogMsg("WARNING: Error tweeting new show details. Continuing anyway: " + err);
             }
+         } else {
+            writeLogMsg("WARNING: Error tweeting new show details. Continuing anyway: " + err);
          }
-         writeLogMsg("WARNING: Error tweeting new show details. Continuing anyway: " + err);
       }
    }
 
@@ -121,15 +126,25 @@ async function tweetPlaylist() {
          if (err_fixed.code && err_fixed.error.detail) {
             let err_code = err_fixed.code;
             let err_desc = err_fixed.error.detail;
-            return "FAILURE: Error tweeting new track details: " + err_code + " - " + err_desc;
+            //if it's a valid duplicate and not a repeat, try again with an extra ~
+            if (error_desc.indexOf('duplicate') > 0 && play_string != previous_tweet_str) {
+                  play_string += "  ~";
+                  track_tweet = await twitter.sendTweet(client,play_string);
+            } else {
+               return "FAILURE: Error tweeting new track details: " + err_code + " - " + err_desc;
+            }
+         } else {
+            return "FAILURE: Error tweeting new track details: " + err;
          }
+      } else {
+         return "FAILURE: Error tweeting new track details: " + err;
       }
-      return "FAILURE: Error tweeting new track details: " + err;
    }
 
    //Write tweeted track to file for reference
    try {
-      let track_to_file = kexp.writeTrackToFile(JSON.stringify(current_track, null, 3));
+      previous_tweet_str = play_string; //Store previous play string for ref in case of error
+      let track_to_file = kexp.writeTrackToFile(JSON.stringify(current_track, null, 3),kexp_config.TRACK_FILE);
       if (!track_to_file) {
          throw new Error("Failed to write latest track to file for unclear reasons. Tweet succeeded. Expect 403s to follow for duplicate tweets.");
       }
